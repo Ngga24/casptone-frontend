@@ -26,17 +26,9 @@ export default function AuthForm() {
     password: "",
   });
 
-  const {
-    login,
-    register,
-    isLoading: isAuthLoading,
-  } = useAuth();
+  const { login, register, isLoading: isAuthLoading } = useAuth();
 
-  const {
-    verifyOtp,
-    resendOtp,
-    isLoading: isOtpLoading,
-  } = useOtp();
+  const { verifyOtp, resendOtp, isLoading: isOtpLoading } = useOtp();
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -81,18 +73,18 @@ export default function AuthForm() {
 
           setEmailVerify(formData.email);
           setStep("otp-verify");
-          setTimer(300); // 5 menit
+          setTimer(300);
         }
       } else {
-        const response = await verifyOtp(
-          emailVerify,
-          otpCode
-        );
+        const response = await verifyOtp({
+          email: emailVerify,
+          code: otpCode,
+        });
 
         alert("Verifikasi berhasil");
         window.location.reload();
-        }
-      } catch (err) {
+      }
+    } catch (err) {
       setErrorMessage(err.message);
     }
   };
@@ -107,14 +99,10 @@ export default function AuthForm() {
     } catch (err) {
       setErrorMessage(err.message);
     }
-  }
+  };
 
   if (mode === "forgot-password") {
-    return (
-      <ForgotPasswordPage
-        onBack={() => setMode("auth")}
-      />
-    );
+    return <ForgotPasswordPage onBack={() => setMode("auth")} />;
   }
 
   const inputClass = `w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder:text-slate-500 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20`;
@@ -127,18 +115,30 @@ export default function AuthForm() {
         </div>
 
         <h2 className="text-3xl font-bold text-white">
-          {step === "otp-verify" ? "Verify OTP" : isLogin ? "Welcome Back" : "Create Account"}
+          {step === "otp-verify"
+            ? "Verify OTP"
+            : isLogin
+              ? "Welcome Back"
+              : "Create Account"}
         </h2>
 
         <p className="mt-2 text-slate-400">
-          {step === "otp-verify" ? "Masukkan kode OTP yang telah dikirim" : isLogin ? "Masuk untuk mengakses dashboard Digital Twin Anda" : "Daftar untuk mulai menggunakan platform"}
+          {step === "otp-verify"
+            ? "Masukkan kode OTP yang telah dikirim"
+            : isLogin
+              ? "Masuk untuk mengakses dashboard Digital Twin Anda"
+              : "Daftar untuk mulai menggunakan platform"}
         </p>
 
         {step === "register" && (
           <p className="mt-4 text-sm text-slate-400">
             {isLogin ? "Belum punya akun?" : "Sudah punya akun?"}
 
-            <button type="button" onClick={() => setIsLogin(!isLogin)} className="ml-1 text-indigo-400 hover:text-indigo-300 font-medium transition">
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="ml-1 text-indigo-400 hover:text-indigo-300 font-medium transition"
+            >
               {isLogin ? "Daftar sekarang" : "Login di sini"}
             </button>
           </p>
@@ -156,18 +156,48 @@ export default function AuthForm() {
           <>
             {!isLogin && (
               <>
-                <input name="fullname" placeholder="Nama Lengkap" value={formData.fullname} onChange={handleChange} className={inputClass}/>
-                
-                <input name="username" placeholder="Username" value={formData.username} onChange={handleChange} className={inputClass}/>
+                <input
+                  name="fullname"
+                  placeholder="Nama Lengkap"
+                  value={formData.fullname}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+
+                <input
+                  name="username"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
               </>
             )}
 
-            <input name="email" type="email" placeholder="Email" value={formData.email} onChange={handleChange} className={inputClass}/>
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className={inputClass}
+            />
 
             <div className="relative">
-              <input name="password" type={showPass ? "text" : "password"} placeholder="Password" value={formData.password} onChange={handleChange} className={`${inputClass} pr-12`}/>
+              <input
+                name="password"
+                type={showPass ? "text" : "password"}
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`${inputClass} pr-12`}
+              />
 
-              <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition">
+              <button
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
+              >
                 {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
@@ -182,8 +212,16 @@ export default function AuthForm() {
               </button>
             </div>
 
-            <button type="submit" disabled={isAuthLoading} className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 transition-all duration-200 shadow-lg shadow-indigo-500/20 disabled:opacity-50">
-              {isAuthLoading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
+            <button
+              type="submit"
+              disabled={isAuthLoading}
+              className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 transition-all duration-200 shadow-lg shadow-indigo-500/20 disabled:opacity-50"
+            >
+              {isAuthLoading
+                ? "Processing..."
+                : isLogin
+                  ? "Sign In"
+                  : "Create Account"}
             </button>
           </>
         ) : (
@@ -213,8 +251,7 @@ export default function AuthForm() {
             <div className="text-center mt-4">
               {timer > 0 ? (
                 <p className="text-sm text-slate-400">
-                  OTP berlaku {minutes}:
-                  {seconds.toString().padStart(2, "0")}
+                  OTP berlaku {minutes}:{seconds.toString().padStart(2, "0")}
                 </p>
               ) : (
                 <button
@@ -248,17 +285,11 @@ export default function AuthForm() {
           <button
             type="button"
             onClick={() =>
-              (window.location.href =
-                "http://localhost:5000/auth/google-login")
+              (window.location.href = "http://localhost:5000/auth/google-login")
             }
             className="w-full py-3 rounded-xl border border-slate-700 bg-slate-900/50 hover:bg-slate-900 transition-all flex items-center justify-center gap-3 text-white"
           >
-            <img
-              src="/google-icon.png"
-              alt="Google"
-              className="w-5 h-5"
-            />
-
+            <img src="/google-icon.png" alt="Google" className="w-5 h-5" />
             Continue with Google
           </button>
         </>

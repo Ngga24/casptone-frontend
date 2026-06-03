@@ -5,30 +5,22 @@ export default function useOtp() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const verifyOtp = async (email, otpCode) => {
+  const verifyOtp = async (payload) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await apiFetch("/users/verify-otp",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email,
-            otpCode,
-          }),
-        }
-      );
+      const response = await apiFetch("/users/verify-otp", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message ||
-            "OTP tidak valid"
-        );
+        throw new Error(data.message || "Cannot valid OTP");
       }
-      
+
       return data;
     } catch (err) {
       setError(err.message);
@@ -43,22 +35,17 @@ export default function useOtp() {
     setError(null);
 
     try {
-      const response = await apiFetch("/users/resend-otp",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email,
-          }),
-        }
-      );
+      const response = await apiFetch("/users/resend-otp", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+        }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message ||
-            "Gagal mengirim OTP"
-        );
+        throw new Error(data.message || "Gagal mengirim OTP");
       }
 
       return data;

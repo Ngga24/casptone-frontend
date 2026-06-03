@@ -10,27 +10,17 @@ export default function ForgotPasswordPage({ onBack }) {
 
   const [resetToken, setResetToken] = useState("");
 
-  const [newPassword, setNewPassword] =
-    useState("");
+  const [newPassword, setNewPassword] = useState("");
 
-  const [confirmPassword, setConfirmPassword] =
-    useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [showPass, setShowPass] =
-    useState(false);
+  const [showPass, setShowPass] = useState(false);
 
-  const [showConfirmPass, setShowConfirmPass] =
-    useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
-  const [errorMessage, setErrorMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const {
-    sendOtp,
-    verifyOtp,
-    resetPassword,
-    isLoading,
-  } = useForgotPassword();
+  const { sendOtp, verifyOtp, resetPassword, isLoading } = useForgotPassword();
 
   const inputClass =
     "w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder:text-slate-500 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20";
@@ -60,19 +50,12 @@ export default function ForgotPasswordPage({ onBack }) {
     setErrorMessage("");
 
     try {
-      const data = await verifyOtp(
-        email,
-        otpCode
-      );
+      const data = await verifyOtp(email, otpCode);
 
       console.log("OTP Response:", data);
 
       // menyesuaikan response BE
-      setResetToken(
-        data?.data?.token ||
-        data?.token ||
-        ""
-      );
+      setResetToken(data?.data?.token || data?.token || "");
 
       setStep("reset");
     } catch (err) {
@@ -85,24 +68,15 @@ export default function ForgotPasswordPage({ onBack }) {
 
     setErrorMessage("");
 
-    if (
-      newPassword !== confirmPassword
-    ) {
-      setErrorMessage(
-        "Konfirmasi password tidak sama"
-      );
+    if (newPassword !== confirmPassword) {
+      setErrorMessage("Konfirmasi password tidak sama");
       return;
     }
 
     try {
-      await resetPassword(
-        resetToken,
-        newPassword
-      );
+      await resetPassword(resetToken, newPassword);
 
-      alert(
-        "Password berhasil diubah"
-      );
+      alert("Password berhasil diubah");
 
       onBack();
     } catch (err) {
@@ -118,25 +92,19 @@ export default function ForgotPasswordPage({ onBack }) {
         </div>
 
         <h2 className="text-3xl font-bold text-white">
-          {step === "email" &&
-            "Forgot Password"}
+          {step === "email" && "Forgot Password"}
 
-          {step === "otp" &&
-            "Verify OTP"}
+          {step === "otp" && "Verify OTP"}
 
-          {step === "reset" &&
-            "Reset Password"}
+          {step === "reset" && "Reset Password"}
         </h2>
 
         <p className="mt-2 text-slate-400">
-          {step === "email" &&
-            "Masukkan email yang terdaftar"}
+          {step === "email" && "Masukkan email yang terdaftar"}
 
-          {step === "otp" &&
-            "Masukkan kode OTP yang telah dikirim"}
+          {step === "otp" && "Masukkan kode OTP yang telah dikirim"}
 
-          {step === "reset" &&
-            "Masukkan password baru"}
+          {step === "reset" && "Masukkan password baru"}
         </p>
       </div>
 
@@ -147,147 +115,83 @@ export default function ForgotPasswordPage({ onBack }) {
       )}
 
       {step === "email" && (
-        <form
-          onSubmit={handleSendOtp}
-          className="space-y-4"
-        >
+        <form onSubmit={handleSendOtp} className="space-y-4">
           <input
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
+            onChange={(e) => setEmail(e.target.value)}
             className={inputClass}
           />
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={buttonClass}
-          >
-            {isLoading
-              ? "Mengirim OTP..."
-              : "Kirim OTP"}
+          <button type="submit" disabled={isLoading} className={buttonClass}>
+            {isLoading ? "Mengirim OTP..." : "Kirim OTP"}
           </button>
         </form>
       )}
 
       {step === "otp" && (
-        <form
-          onSubmit={handleVerifyOtp}
-          className="space-y-4"
-        >
+        <form onSubmit={handleVerifyOtp} className="space-y-4">
           <p className="text-center text-slate-400 text-sm">
             OTP dikirim ke
-            <span className="text-white font-medium">
-              {" "}
-              {email}
-            </span>
+            <span className="text-white font-medium"> {email}</span>
           </p>
 
           <input
             type="text"
             value={otpCode}
-            onChange={(e) =>
-              setOtpCode(e.target.value)
-            }
+            onChange={(e) => setOtpCode(e.target.value)}
             maxLength={6}
             placeholder="000000"
             className="w-full py-4 rounded-xl bg-slate-900/60 border border-slate-700 text-center text-3xl font-bold tracking-[0.6em] text-white outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20"
           />
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={buttonClass}
-          >
-            {isLoading
-              ? "Verifying..."
-              : "Verify OTP"}
+          <button type="submit" disabled={isLoading} className={buttonClass}>
+            {isLoading ? "Verifying..." : "Verify OTP"}
           </button>
         </form>
       )}
 
       {step === "reset" && (
-        <form
-          onSubmit={handleResetPassword}
-          className="space-y-4"
-        >
+        <form onSubmit={handleResetPassword} className="space-y-4">
           <div className="relative">
             <input
-              type={
-                showPass
-                  ? "text"
-                  : "password"
-              }
+              type={showPass ? "text" : "password"}
               placeholder="Password Baru"
               value={newPassword}
-              onChange={(e) =>
-                setNewPassword(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setNewPassword(e.target.value)}
               className={`${inputClass} pr-12`}
             />
 
             <button
               type="button"
-              onClick={() =>
-                setShowPass(!showPass)
-              }
+              onClick={() => setShowPass(!showPass)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
             >
-              {showPass ? (
-                <EyeOff size={18} />
-              ) : (
-                <Eye size={18} />
-              )}
+              {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
           <div className="relative">
             <input
-              type={
-                showConfirmPass
-                  ? "text"
-                  : "password"
-              }
+              type={showConfirmPass ? "text" : "password"}
               placeholder="Konfirmasi Password"
               value={confirmPassword}
-              onChange={(e) =>
-                setConfirmPassword(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className={`${inputClass} pr-12`}
             />
 
             <button
               type="button"
-              onClick={() =>
-                setShowConfirmPass(
-                  !showConfirmPass
-                )
-              }
+              onClick={() => setShowConfirmPass(!showConfirmPass)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
             >
-              {showConfirmPass ? (
-                <EyeOff size={18} />
-              ) : (
-                <Eye size={18} />
-              )}
+              {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={buttonClass}
-          >
-            {isLoading
-              ? "Menyimpan..."
-              : "Simpan Password"}
+          <button type="submit" disabled={isLoading} className={buttonClass}>
+            {isLoading ? "Menyimpan..." : "Simpan Password"}
           </button>
         </form>
       )}
