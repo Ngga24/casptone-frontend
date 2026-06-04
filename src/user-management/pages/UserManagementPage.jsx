@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sider";
+import Sidebar from "../components/Sidebar";
 import useUsers from "../hooks/useUsers";
 import { Search, Trash2 } from "lucide-react";
 
@@ -126,11 +126,11 @@ export default function UserManagementPage() {
                         <td className="px-6 py-4 text-right">
                           <button
                             onClick={() => deleteUser(user.id)}
-                            disabled={!user.is_active} // <-- Mematikan tombol jika is_active false
+                            disabled={!user.is_active} 
                             className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                               user.is_active
-                                ? "text-red-600 hover:text-red-700 hover:bg-red-50" // <-- Merah kalau masih aktif
-                                : "text-slate-400 cursor-not-allowed opacity-60" // <-- Abu-abu & kursor coret kalau Inactive
+                                ? "text-red-600 hover:text-red-700 hover:bg-red-50" 
+                                : "text-slate-400 cursor-not-allowed opacity-60" 
                             }`}
                           >
                             <Trash2 size={16} />

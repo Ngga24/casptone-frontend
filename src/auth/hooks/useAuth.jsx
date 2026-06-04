@@ -31,11 +31,13 @@ export default function useAuth() {
       // 1. Ambil status checkin dan username dari response backend
       const isCheckin = data.data.isCheckin;
       const username = data.data.username;
+      const role = data.data.role;
 
       // 2. Simpan semuanya ke localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("isCheckin", isCheckin);
+      localStorage.setItem("role", role);
       if (username) localStorage.setItem("username", username);
 
       setAuth(accessToken, data.data.user || null);

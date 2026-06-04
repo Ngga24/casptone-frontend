@@ -3,7 +3,7 @@ import useOtp from "../hooks/useOtp";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import ForgotPasswordPage from "../pages/ForgotPasswordPage"; 
+import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -35,12 +35,22 @@ export default function AuthForm() {
     e.preventDefault();
     setErrorMessage("");
 
-    console.log("Tombol Sign In diklik!");
-
     try {
       if (isLogin) {
-        await login({ identifier: formData.email, password: formData.password });
-        navigate("/face-check");
+        const result = await login({
+          identifier: formData.email,
+          password: formData.password,
+        });
+
+        if (result.data.role === "admin") {
+          navigate("/user-management");
+        } else {
+          if (result.data.isCheckin) {
+            navigate("/dashboard");
+          } else {
+            navigate("/face-check");
+          }
+        }
       } else {
         await register(formData);
         setEmailVerify(formData.email);
@@ -73,17 +83,22 @@ export default function AuthForm() {
     // INI PEMBUNGKUS BARU: Menjamin tampilan selalu di tengah layar
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 p-6">
       <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/50 transition-all duration-300">
-        
         {/* HEADER */}
         <div className="mb-6 text-center">
           <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xs font-bold tracking-wider">
             AI
           </div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            {step === "otp" ? "Verify OTP" : isLogin ? "Welcome Back" : "Create Account"}
+            {step === "otp"
+              ? "Verify OTP"
+              : isLogin
+                ? "Welcome Back"
+                : "Create Account"}
           </h1>
           <p className="text-xs text-slate-400 mt-1 font-normal">
-            {step === "otp" ? "Enter the code sent to your email" : "Smart productivity dashboard"}
+            {step === "otp"
+              ? "Enter the code sent to your email"
+              : "Smart productivity dashboard"}
           </p>
         </div>
 
@@ -99,11 +114,29 @@ export default function AuthForm() {
           <form onSubmit={handleSubmit} className="space-y-3.5">
             {!isLogin && (
               <div className="grid grid-cols-2 gap-3">
-                <input name="fullname" type="text" placeholder="Full name" onChange={handleChange} className={inputClass} />
-                <input name="username" type="text" placeholder="Username" onChange={handleChange} className={inputClass} />
+                <input
+                  name="fullname"
+                  type="text"
+                  placeholder="Full name"
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+                <input
+                  name="username"
+                  type="text"
+                  placeholder="Username"
+                  onChange={handleChange}
+                  className={inputClass}
+                />
               </div>
             )}
-            <input name="email" type="email" placeholder="Email address" onChange={handleChange} className={inputClass} />
+            <input
+              name="email"
+              type="email"
+              placeholder="Email address"
+              onChange={handleChange}
+              className={inputClass}
+            />
             <div className="relative">
               <input
                 name="password"
@@ -124,7 +157,11 @@ export default function AuthForm() {
               disabled={isLoading}
               className="w-full py-2.5 mt-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-all shadow-sm shadow-blue-600/10 active:scale-[0.99] disabled:opacity-50"
             >
-              {isLoading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
+              {isLoading
+                ? "Processing..."
+                : isLogin
+                  ? "Sign In"
+                  : "Create Account"}
             </button>
           </form>
         )}
@@ -132,7 +169,10 @@ export default function AuthForm() {
         {/* OTP FORM */}
         {step === "otp" && (
           <form onSubmit={handleOtp} className="space-y-4">
-            <p className="text-center text-xs text-slate-500">Sent to <span className="text-slate-800 font-medium">{emailVerify}</span></p>
+            <p className="text-center text-xs text-slate-500">
+              Sent to{" "}
+              <span className="text-slate-800 font-medium">{emailVerify}</span>
+            </p>
             <input
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
@@ -140,7 +180,10 @@ export default function AuthForm() {
               placeholder="000000"
               className="w-full text-center tracking-[0.6em] text-xl py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-mono font-semibold"
             />
-            <button disabled={otpLoading} className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-all">
+            <button
+              disabled={otpLoading}
+              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-all"
+            >
               {otpLoading ? "Verifying..." : "Verify OTP"}
             </button>
           </form>
@@ -151,12 +194,20 @@ export default function AuthForm() {
           <div className="mt-5 flex flex-col items-center space-y-2.5 text-xs border-t border-slate-100 pt-4">
             <div className="text-slate-500">
               {isLogin ? "Belum punya akun? " : "Sudah punya akun? "}
-              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-blue-600 font-semibold hover:text-blue-700 transition-colors ml-0.5">
+              <button
+                type="button"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-blue-600 font-semibold hover:text-blue-700 transition-colors ml-0.5"
+              >
                 {isLogin ? "Daftar di sini" : "Back to login"}
               </button>
             </div>
             {isLogin && (
-              <button type="button" onClick={() => setMode("forgot")} className="text-slate-400 hover:text-slate-600 transition-colors">
+              <button
+                type="button"
+                onClick={() => setMode("forgot")}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
                 Forgot password?
               </button>
             )}
