@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import { isFaceCheckedToday } from "../utils/faceCheck";
 
 export default function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
@@ -10,8 +9,11 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/" replace />;
   }
 
+  // UPDATE: Cek status face check pakai data dari backend/localStorage yang baru
+  const isCheckin = localStorage.getItem("isCheckin") === "true";
+
   // belum face check hari ini
-  if (!isFaceCheckedToday()) {
+  if (!isCheckin) {
     return <Navigate to="/face-check" replace />;
   }
 
