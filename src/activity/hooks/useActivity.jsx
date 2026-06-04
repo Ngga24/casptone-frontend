@@ -30,21 +30,22 @@ export default function useActivity() {
         );
       }
 
-      // simpan hasil AI
+      // Menyimpan berkas hasil prediksi AI ke storage lokal
       localStorage.setItem(
         "analyticsResult",
         JSON.stringify(data)
       );
 
+      // Memicu trigger event global agar layar dashboard sinkron secara realtime
+      window.dispatchEvent(new Event("analytics-updated"));
+
+      // Redirect kembali ke gerbang utama dashboard
       navigate("/dashboard");
 
       return data;
-
     } catch (err) {
       setError(err.message);
-
       console.error("submitActivity error:", err);
-
       throw err;
     } finally {
       setLoading(false);

@@ -1,10 +1,11 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import ProtectedRoute from "./ProtectedRoute";
 
 // public
 import LandingPage from "../auth/pages/LandingPage";
 import ForgotPasswordPage from "../auth/pages/ForgotPasswordPage";
+import AuthForm from "../auth/components/AuthForm";
 
 // protected pages
 import DashboardPage from "../dashboard/pages/DashboardPage";
@@ -19,14 +20,15 @@ import FaceCheckPage from "../daily-checkin/pages/FaceCheckPage";
 export default function AppRoutes() {
   return (
     <Routes>
-
-      {/* publc route */}
+      {/* PUBLIC ROUTES */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<AuthForm />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
+      
+      {/* FACE CHECK (Bisa akses langsung atau setelah login) */}
       <Route path="/face-check" element={<FaceCheckPage />} />
 
-      {/* Protected route auth + fastcheckin */}
+      {/* PROTECTED ROUTES */}
       <Route
         path="/dashboard"
         element={
@@ -72,6 +74,8 @@ export default function AppRoutes() {
         }
       />
 
+      {/* CATCH ALL - Redirect ke login jika path tidak ditemukan */}
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 }

@@ -1,24 +1,21 @@
 import useAuth from "../hooks/useAuth";
 import useOtp from "../hooks/useOtp";
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-import ForgotPasswordPage from "../pages/ForgotPasswordPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage"; 
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
-  const [step, setStep] = useState("register");
+  const [mode, setMode] = useState("auth");
+  const [step, setStep] = useState("form");
+
   const [emailVerify, setEmailVerify] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [showPass, setShowPass] = useState(false);
-  const [timer, setTimer] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
-  const [mode, setMode] = useState("auth");
 
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     fullname: "",
     username: "",
@@ -26,37 +23,11 @@ export default function AuthForm() {
     password: "",
   });
 
-  const {
-    login,
-    register,
-    isLoading: isAuthLoading,
-  } = useAuth();
-
-  const {
-    verifyOtp,
-    resendOtp,
-    isLoading: isOtpLoading,
-  } = useOtp();
-
-  const minutes = Math.floor(timer / 60);
-  const seconds = timer % 60;
-
-  useEffect(() => {
-    if (timer <= 0) return;
-
-    const interval = setInterval(() => {
-      setTimer((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timer]);
+  const { login, register, isLoading } = useAuth();
+  const { verifyOtp, isLoading: otpLoading } = useOtp();
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMessage("");
   };
 
@@ -64,195 +35,134 @@ export default function AuthForm() {
     e.preventDefault();
     setErrorMessage("");
 
+    console.log("Tombol Sign In diklik!");
+
     try {
-      if (step === "register") {
-        if (isLogin) {
-          await login({
-            identifier: formData.email,
-            password: formData.password,
-          });
-
-          alert("Login berhasil");
-          navigate("/dashboard"); // ✔ FIX
-        } else {
-          await register({
-            fullname: formData.fullname,
-            username: formData.username,
-            email: formData.email,
-            password: formData.password,
-          });
-
-          setEmailVerify(formData.email);
-          setStep("otp-verify");
-          setTimer(300);
-        }
+      if (isLogin) {
+        await login({ identifier: formData.email, password: formData.password });
+        navigate("/face-check");
       } else {
-        await verifyOtp(emailVerify, otpCode);
-
-        alert("Verifikasi berhasil");
-        navigate("/dashboard"); // ✔ FIX
+        await register(formData);
+        setEmailVerify(formData.email);
+        setStep("otp");
       }
     } catch (err) {
       setErrorMessage(err.message);
     }
   };
 
-  const handleResendOtp = async () => {
+  const handleOtp = async (e) => {
+    e.preventDefault();
     try {
-      await resendOtp(emailVerify);
-      alert("OTP berhasil dikirim ulang");
-      setTimer(300);
+      await verifyOtp(emailVerify, otpCode);
+      navigate("/face-check");
     } catch (err) {
       setErrorMessage(err.message);
     }
   };
 
-  if (mode === "forgot-password") {
+  if (mode === "forgot") {
     return <ForgotPasswordPage onBack={() => setMode("auth")} />;
   }
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder:text-slate-500 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20";
+    "w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-sm outline-none transition-all duration-200 " +
+    "focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10";
 
   return (
-    <div className="w-full max-w-md p-8 rounded-3xl bg-slate-800/80 backdrop-blur-xl border border-slate-700 shadow-[0_0_40px_rgba(99,102,241,0.15)]">
-
-      {/* HEADER */}
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-xl">
-          DT
+    // INI PEMBUNGKUS BARU: Menjamin tampilan selalu di tengah layar
+    <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 p-6">
+      <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/50 transition-all duration-300">
+        
+        {/* HEADER */}
+        <div className="mb-6 text-center">
+          <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xs font-bold tracking-wider">
+            AI
+          </div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            {step === "otp" ? "Verify OTP" : isLogin ? "Welcome Back" : "Create Account"}
+          </h1>
+          <p className="text-xs text-slate-400 mt-1 font-normal">
+            {step === "otp" ? "Enter the code sent to your email" : "Smart productivity dashboard"}
+          </p>
         </div>
 
-        <h2 className="text-3xl font-bold text-white">
-          {step === "otp-verify"
-            ? "Verify OTP"
-            : isLogin
-            ? "Welcome Back"
-            : "Create Account"}
-        </h2>
+        {/* ERROR MESSAGE */}
+        {errorMessage && (
+          <div className="mb-4 text-xs text-red-600 bg-red-50 border border-red-100 p-3 rounded-xl">
+            {errorMessage}
+          </div>
+        )}
 
-        <p className="mt-2 text-slate-400">
-          {step === "otp-verify"
-            ? "Masukkan kode OTP yang telah dikirim"
-            : isLogin
-            ? "Masuk untuk mengakses dashboard"
-            : "Daftar untuk mulai menggunakan platform"}
-        </p>
-      </div>
-
-      {/* ERROR */}
-      {errorMessage && (
-        <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-          {errorMessage}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-
-        {/* REGISTER / LOGIN */}
-        {step === "register" ? (
-          <>
+        {/* MAIN FORM */}
+        {step === "form" && (
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {!isLogin && (
-              <>
-                <input
-                  name="fullname"
-                  placeholder="Nama Lengkap"
-                  value={formData.fullname}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-
-                <input
-                  name="username"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </>
+              <div className="grid grid-cols-2 gap-3">
+                <input name="fullname" type="text" placeholder="Full name" onChange={handleChange} className={inputClass} />
+                <input name="username" type="text" placeholder="Username" onChange={handleChange} className={inputClass} />
+              </div>
             )}
-
-            <input
-              name="email"
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              className={inputClass}
-            />
-
+            <input name="email" type="email" placeholder="Email address" onChange={handleChange} className={inputClass} />
             <div className="relative">
               <input
                 name="password"
                 type={showPass ? "text" : "password"}
                 placeholder="Password"
-                value={formData.password}
                 onChange={handleChange}
-                className={`${inputClass} pr-12`}
+                className={`${inputClass} pr-11`}
               />
-
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               >
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
-
             <button
-              type="submit"
-              disabled={isAuthLoading}
-              className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 disabled:opacity-50"
+              disabled={isLoading}
+              className="w-full py-2.5 mt-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-all shadow-sm shadow-blue-600/10 active:scale-[0.99] disabled:opacity-50"
             >
-              {isAuthLoading
-                ? "Processing..."
-                : isLogin
-                ? "Sign In"
-                : "Create Account"}
+              {isLoading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
             </button>
-          </>
-        ) : (
-          /* OTP STEP */
-          <>
-            <p className="text-center text-slate-400 text-sm">
-              Masukkan OTP ke <span className="text-white">{emailVerify}</span>
-            </p>
+          </form>
+        )}
 
+        {/* OTP FORM */}
+        {step === "otp" && (
+          <form onSubmit={handleOtp} className="space-y-4">
+            <p className="text-center text-xs text-slate-500">Sent to <span className="text-slate-800 font-medium">{emailVerify}</span></p>
             <input
               value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value)}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
               maxLength={6}
               placeholder="000000"
-              className="w-full py-4 text-center text-3xl tracking-[0.6em] bg-slate-900/60 border border-slate-700 text-white rounded-xl"
+              className="w-full text-center tracking-[0.6em] text-xl py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-mono font-semibold"
             />
-
-            <button
-              type="submit"
-              disabled={isOtpLoading}
-              className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 disabled:opacity-50"
-            >
-              {isOtpLoading ? "Verifying..." : "Verify OTP"}
+            <button disabled={otpLoading} className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-all">
+              {otpLoading ? "Verifying..." : "Verify OTP"}
             </button>
-
-            <div className="text-center mt-4">
-              {timer > 0 ? (
-                <p className="text-sm text-slate-400">
-                  OTP berlaku {minutes}:{seconds.toString().padStart(2, "0")}
-                </p>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  className="text-indigo-400"
-                >
-                  Kirim ulang OTP
-                </button>
-              )}
-            </div>
-          </>
+          </form>
         )}
-      </form>
+
+        {/* FOOTER NAVIGASI */}
+        {step === "form" && (
+          <div className="mt-5 flex flex-col items-center space-y-2.5 text-xs border-t border-slate-100 pt-4">
+            <div className="text-slate-500">
+              {isLogin ? "Belum punya akun? " : "Sudah punya akun? "}
+              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-blue-600 font-semibold hover:text-blue-700 transition-colors ml-0.5">
+                {isLogin ? "Daftar di sini" : "Back to login"}
+              </button>
+            </div>
+            {isLogin && (
+              <button type="button" onClick={() => setMode("forgot")} className="text-slate-400 hover:text-slate-600 transition-colors">
+                Forgot password?
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

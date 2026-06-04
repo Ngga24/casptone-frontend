@@ -1,4 +1,3 @@
-// src/daily-checkin/hooks/useFaceCheckin.js
 import { useState } from "react";
 import { faceCheckIn } from "../services/faceCheckinService";
 

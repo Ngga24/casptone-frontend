@@ -4,7 +4,7 @@ export default function useDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const load = () => {
     try {
       setLoading(true);
 
@@ -19,9 +19,9 @@ export default function useDashboard() {
 
       const parsed = JSON.parse(raw);
 
-      console.log("PARSED dashboardData:", parsed);
+      console.log("PARSED:", parsed);
 
-      setDashboardData(parsed);
+      setDashboardData(parsed.data || parsed);
 
     } catch (err) {
       console.error("useDashboard parse error:", err);
@@ -29,10 +29,19 @@ export default function useDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    load();
+
+    window.addEventListener("analytics-updated", load);
+    window.addEventListener("storage", load);
+
+    return () => {
+      window.removeEventListener("analytics-updated", load);
+      window.removeEventListener("storage", load);
+    };
   }, []);
 
-  return {
-    dashboardData,
-    loading,
-  };
+  return { dashboardData, loading };
 }

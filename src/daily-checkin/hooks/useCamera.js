@@ -1,4 +1,3 @@
-// src/daily-checkin/hooks/useCamera.js
 import { useRef } from "react";
 
 export default function useCamera() {

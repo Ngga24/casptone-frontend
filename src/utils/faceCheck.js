@@ -1,16 +1,14 @@
-// src/utils/faceCheck.js
-
 export const isFaceCheckedToday = () => {
-  const savedDate = localStorage.getItem("faceCheckedDate");
-
-  if (!savedDate) return false;
-
-  const today = new Date().toDateString();
-
-  return savedDate === today;
+  const lastChecked = localStorage.getItem("face_checked_date");
+  const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+  return lastChecked === today;
 };
 
 export const setFaceCheckedToday = () => {
-  const today = new Date().toDateString();
-  localStorage.setItem("faceCheckedDate", today);
+  const today = new Date().toISOString().split("T")[0];
+  localStorage.setItem("face_checked_date", today);
+};
+
+export const clearFaceCheckStatus = () => {
+  localStorage.removeItem("face_checked_date");
 };
