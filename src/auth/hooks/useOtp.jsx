@@ -5,7 +5,7 @@ export default function useOtp() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const verifyOtp = async (email, otpCode) => {
+  const verifyOtp = async (email, code) => {
     setIsLoading(true);
     setError(null);
 
@@ -15,7 +15,7 @@ export default function useOtp() {
           method: "POST",
           body: JSON.stringify({
             email,
-            otpCode,
+            code,
           }),
         }
       );

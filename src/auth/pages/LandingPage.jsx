@@ -1,5 +1,5 @@
-import HeroSection from "../auth/components/HeroSection";
-import AuthForm from "../auth/components/AuthForm";
+import HeroSection from "../components/HeroSection";
+import AuthForm from "../components/AuthForm";
 
 export default function LandingPage() {
   return (

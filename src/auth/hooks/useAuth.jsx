@@ -29,12 +29,12 @@ export default function useAuth() {
 
       localStorage.setItem(
         "accessToken",
-        response.data.accessToken
+        data.data.accessToken
       );
 
       localStorage.setItem(
         "refreshToken",
-        response.data.refreshToken
+        data.data.refreshToken
       );
 
       return data;
