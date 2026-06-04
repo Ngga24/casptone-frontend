@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isFaceCheckedToday, setFaceCheckedToday } from "../../utils/faceCheck";
 import { apiFetch } from "../../utils/api";
 
 export default function FaceCheckPage() {
@@ -13,17 +12,17 @@ export default function FaceCheckPage() {
   const [error, setError] = useState(null);
   const [cameraOn, setCameraOn] = useState(false);
 
-  // Berjalan sekali saat halaman dimuat. Jika hari ini sudah check-in, langsung ke dashboard.
+  // Berjalan sekali saat halaman dimuat
   useEffect(() => {
-    // Cek apakah user sudah login (cek token/session)
-    const token = localStorage.getItem("accessToken"); 
+    const token = localStorage.getItem("accessToken");
     if (!token) {
-      navigate("/login"); // Belum login, tendang ke login
+      navigate("/login");
       return;
     }
 
-    // Jika sudah login, cek apakah sudah face check hari ini
-    if (isFaceCheckedToday()) {
+    // UPDATE: Gunakan isCheckin dari localStorage hasil login
+    const isCheckin = localStorage.getItem("isCheckin") === "true";
+    if (isCheckin) {
       navigate("/dashboard");
     }
   }, [navigate]);
@@ -81,10 +80,9 @@ export default function FaceCheckPage() {
         throw new Error(data.message || "Face check-in gagal");
       }
 
-      // Simpan status bahwa user sudah check-in hari ini
-      setFaceCheckedToday();
+      // UPDATE: Simpan status true ke localStorage
+      localStorage.setItem("isCheckin", "true");
 
-      // Matikan kamera agar lampu indikator webcam di laptop mati
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
       }
@@ -99,9 +97,7 @@ export default function FaceCheckPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-slate-900">
-
       <div className="w-full max-w-lg bg-white border border-slate-100 rounded-3xl p-8 shadow-xl shadow-slate-200/50">
-
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold tracking-tight">Face Check-In</h1>
           <p className="text-slate-500 text-sm mt-1.5 font-light">
@@ -118,7 +114,20 @@ export default function FaceCheckPage() {
         <div className="relative w-full aspect-video bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center shadow-inner">
           {!cameraOn && (
             <div className="flex flex-col items-center gap-2 text-slate-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                <circle cx="12" cy="13" r="3" />
+              </svg>
               <p className="text-sm font-medium">Kamera belum aktif</p>
             </div>
           )}
@@ -151,9 +160,9 @@ export default function FaceCheckPage() {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-5 font-light">
-          Pastikan wajah terlihat jelas di tengah kamera dengan pencahayaan yang cukup.
+          Pastikan wajah terlihat jelas di tengah kamera dengan pencahayaan yang
+          cukup.
         </p>
-
       </div>
     </div>
   );

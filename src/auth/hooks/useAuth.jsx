@@ -14,6 +14,7 @@ export default function useAuth() {
 
     try {
       const response = await apiFetch("/auth", {
+        // Pastikan endpoint ini sesuai dengan backend kamu (sebelumnya /users/login)
         method: "POST",
         body: JSON.stringify(payload),
       });
@@ -27,8 +28,15 @@ export default function useAuth() {
       const accessToken = data.data.accessToken;
       const refreshToken = data.data.refreshToken;
 
+      // 1. Ambil status checkin dan username dari response backend
+      const isCheckin = data.data.isCheckin;
+      const username = data.data.username;
+
+      // 2. Simpan semuanya ke localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("isCheckin", isCheckin);
+      if (username) localStorage.setItem("username", username);
 
       setAuth(accessToken, data.data.user || null);
 
@@ -69,7 +77,15 @@ export default function useAuth() {
   const logout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    clearFaceCheckStatus();
+
+    // 3. Bersihkan data user saat logout
+    localStorage.removeItem("isCheckin");
+    localStorage.removeItem("username");
+
+    // Kalau kamu masih pakai fungsi ini dari utils, biarin aja.
+    // Tapi kalau udah full pakai localStorage "isCheckin", baris di bawah bisa dihapus.
+    // clearFaceCheckStatus();
+
     window.location.reload();
   };
 
