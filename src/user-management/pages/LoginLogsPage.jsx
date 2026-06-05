@@ -68,9 +68,7 @@ export default function LoginLogsPage() {
                 <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
                   <tr>
                     <th className="px-6 py-4 font-medium w-[20%]">Timestamp</th>
-                    <th className="px-6 py-4 font-medium w-[30%]">
-                      User / Email
-                    </th>
+                    <th className="px-6 py-4 font-medium w-[30%]">Email</th>
                     <th className="px-6 py-4 font-medium w-[20%]">
                       IP & Location
                     </th>

@@ -11,7 +11,7 @@ const useAuthStore = create((set) => ({
     if (!token) return;
 
     try {
-      const response = await apiFetch("/auth"); 
+      const response = await apiFetch("/auth");
       if (response.ok) {
         const data = await response.json();
 
