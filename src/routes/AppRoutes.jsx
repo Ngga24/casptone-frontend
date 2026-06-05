@@ -1,26 +1,30 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
-// public
+// --- PUBLIC PAGES ---
 import LandingPage from "../auth/pages/LandingPage";
 import ForgotPasswordPage from "../auth/pages/ForgotPasswordPage";
 import AuthForm from "../auth/components/AuthForm";
 
-// protected pages
+// --- PROTECTED PAGES (USER) ---
 import DashboardPage from "../dashboard/pages/DashboardPage";
 import AIInsightPage from "../ai-insight/pages/AIInsightPage";
 import AnalyticsPage from "../analytics/pages/AnalyticsPage";
 import HistoryPage from "../history/pages/HistoryPage";
 import InputActivityPage from "../activity/pages/InputActivityPage";
+import ProfilePage from "../dashboard/pages/ProfilePage"; // Ditambahkan dari Kode A
+
+// --- PROTECTED PAGES (ADMIN) ---
 import UserManagementPage from "../user-management/pages/UserManagementPage";
 import LoginLogsPage from "../user-management/pages/LoginLogsPage";
 
-// face check
+// --- FACE CHECK ---
 import FaceCheckPage from "../daily-checkin/pages/FaceCheckPage";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* PUBLIC ROUTES */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<AuthForm />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -64,6 +68,14 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["user"]}>
             <HistoryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />

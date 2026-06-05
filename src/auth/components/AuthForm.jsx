@@ -80,10 +80,8 @@ export default function AuthForm() {
     "focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10";
 
   return (
-    // INI PEMBUNGKUS BARU: Menjamin tampilan selalu di tengah layar
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 p-6">
       <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/50 transition-all duration-300">
-        {/* HEADER */}
         <div className="mb-6 text-center">
           <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xs font-bold tracking-wider">
             AI
@@ -102,14 +100,12 @@ export default function AuthForm() {
           </p>
         </div>
 
-        {/* ERROR MESSAGE */}
         {errorMessage && (
           <div className="mb-4 text-xs text-red-600 bg-red-50 border border-red-100 p-3 rounded-xl">
             {errorMessage}
           </div>
         )}
 
-        {/* MAIN FORM */}
         {step === "form" && (
           <form onSubmit={handleSubmit} className="space-y-3.5">
             {!isLogin && (
@@ -166,7 +162,6 @@ export default function AuthForm() {
           </form>
         )}
 
-        {/* OTP FORM */}
         {step === "otp" && (
           <form onSubmit={handleOtp} className="space-y-4">
             <p className="text-center text-xs text-slate-500">
@@ -189,7 +184,6 @@ export default function AuthForm() {
           </form>
         )}
 
-        {/* FOOTER NAVIGASI */}
         {step === "form" && (
           <div className="mt-5 flex flex-col items-center space-y-2.5 text-xs border-t border-slate-100 pt-4">
             <div className="text-slate-500">

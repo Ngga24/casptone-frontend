@@ -8,12 +8,13 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   const role = localStorage.getItem("role") || "user";
   const isCheckin = localStorage.getItem("isCheckin") === "true";
 
-  // 1. Belum login?
+  // 1. Belum login? Tendang ke Landing Page
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
-  // 2. Cek Role (Hak Akses)
+  // 2. Cek Hak Akses Role
+  // Kalau rute ini punya batasan role, dan role user saat ini dilarang masuk
   if (allowedRoles && !allowedRoles.includes(role)) {
     if (role === "admin") {
       return <Navigate to="/user-management" replace />;
@@ -22,12 +23,12 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     }
   }
 
-  // 3. Cek Face Check (HANYA BERLAKU UNTUK ROLE USER)
+  // 3. Cek Face Check (KHUSUS USER)
   // Admin bebas lewat, logika ini cuma nangkep user biasa!
   if (role === "user" && !isCheckin) {
     return <Navigate to="/face-check" replace />;
   }
 
-  // Silakan masuk
+  // Lolos semua hadangan, silakan masuk
   return children;
 }

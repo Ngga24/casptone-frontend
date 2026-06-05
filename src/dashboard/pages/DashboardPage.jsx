@@ -1,5 +1,7 @@
 import DashboardLayout from "../components/DashboardLayout";
 import useDashboard from "../hooks/useDashboard";
+import DailySummary from "../components/DailySummary"; 
+
 import {
   Target,
   Brain,
@@ -28,13 +30,12 @@ export default function DashboardPage() {
     );
   }
 
-  const main = dashboardData?.["1_main_dashboard"] || {};
+  const main = dashboardData?.data?.["1_main_dashboard"] || {};
   const summary = dashboardData?.dailySummary || {};
 
   return (
     <DashboardLayout title="Dashboard">
-      
-      {/* HERO GREETING */}
+
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
           Welcome back, {username} 👋
@@ -44,7 +45,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* METRICS ROW 1 */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 mb-5">
         <Card
           title="Productivity Status"
@@ -71,7 +71,6 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* METRICS ROW 2 */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 mb-8">
         <Card
           title="Fatigue Level"
@@ -98,17 +97,22 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* DAILY SUMMARY BLOCK */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <h3 className="text-base font-bold text-slate-800 tracking-tight mb-4">
-          Daily Summary
-        </h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-base font-bold text-slate-800 tracking-tight">
+            Daily Summary
+          </h3>
+
+          <span className="text-[10px] text-slate-400 font-medium bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100/50">
+            Updated: {summary.last_updated ? summary.last_updated : "Belum ada aktivitas"}
+          </span>
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-sm">
           <SummaryItem label="Sleep" value={`${summary.sleep_duration ?? 0} hrs`} />
           <SummaryItem label="Study / Work" value={`${summary.study_work_duration ?? 0} hrs`} />
           <SummaryItem label="Downtime" value={`${summary.downtime_duration ?? 0} hrs`} />
-          <SummaryItem label="Exercise" value={`${summary.exercise_duration ?? 0} hrs`} />
+          <SummaryItem label="Exercise" value={`${summary.exercise_duration ?? 0} min`} />
           <SummaryItem label="Stress" value={`${summary.stress_level ?? 0} / 10`} />
         </div>
       </div>
@@ -117,7 +121,6 @@ export default function DashboardPage() {
   );
 }
 
-// Komponen Card yang Baru (Minimalis & Elegan tanpa banner warna-warni penuh)
 function Card({ title, value, icon, iconColor, iconBg }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between min-h-[120px]">
@@ -138,7 +141,6 @@ function Card({ title, value, icon, iconColor, iconBg }) {
   );
 }
 
-// Komponen Item Ringkasan Kecil
 function SummaryItem({ label, value }) {
   return (
     <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100/70">

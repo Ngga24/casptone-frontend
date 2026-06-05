@@ -9,7 +9,6 @@ export default function useDashboard() {
       setLoading(true);
 
       const raw = localStorage.getItem("analyticsResult");
-
       console.log("RAW analyticsResult:", raw);
 
       if (!raw) {
@@ -18,10 +17,10 @@ export default function useDashboard() {
       }
 
       const parsed = JSON.parse(raw);
-
       console.log("PARSED:", parsed);
 
-      setDashboardData(parsed.data || parsed);
+      // PERBAIKAN: Simpan root object (parsed) agar dailySummary tidak hilang
+      setDashboardData(parsed);
 
     } catch (err) {
       console.error("useDashboard parse error:", err);
