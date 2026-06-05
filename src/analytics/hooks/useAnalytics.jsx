@@ -4,7 +4,8 @@ import useDashboard from "../../dashboard/hooks/useDashboard";
 export default function useAnalytics() {
   const { dashboardData, loading, error } = useDashboard();
 
-  const analytics = dashboardData?.["2_productivity_analytics_dashboard"] || {};
+  // PERBAIKAN: Tambahkan sisipan '.data' di sini
+  const analytics = dashboardData?.data?.["2_productivity_analytics_dashboard"] || {};
 
   const chartData = useMemo(() => {
     return analytics.daily_productivity_chart || [];
@@ -25,7 +26,6 @@ export default function useAnalytics() {
   return {
     loading,
     error,
-
     analytics,
     chartData,
     heatmap,

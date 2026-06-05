@@ -4,8 +4,9 @@ import {
   ClipboardList,
   LogOut,
   BarChart3,
+  History
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -69,10 +70,18 @@ export default function Sidebar() {
           Analytics
         </NavLink>
 
+        <NavLink to="/history" className={menuClass}>
+          <History size={18} />
+          Similar History
+        </NavLink>
+
       </nav>
 
       <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-        <div className="bg-white rounded-xl p-3.5 mb-3 border border-slate-100 shadow-sm">
+<Link 
+          to="/profile"
+          className="block bg-white rounded-xl p-3.5 mb-3 border border-slate-100 shadow-sm hover:bg-slate-50 hover:border-slate-200 transition-all cursor-pointer"
+        >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold">
               {username.charAt(0).toUpperCase()}
@@ -86,7 +95,7 @@ export default function Sidebar() {
               </p>
             </div>
           </div>
-        </div>
+        </Link>
 
         <button
           onClick={handleLogout}
