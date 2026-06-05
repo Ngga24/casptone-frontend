@@ -5,8 +5,15 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden">
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.06),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(148,163,184,0.05),transparent_50%)]" />
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse" />
+
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
+
+        <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 border border-blue-200/30 rounded-full animate-spin-slow" />
+
+        <div className="absolute top-1/2 left-1/2 w-[450px] h-[450px] -translate-x-1/2 -translate-y-1/2 border border-cyan-200/20 rounded-full animate-spin-reverse" />
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
 
@@ -17,11 +24,9 @@ export default function LandingPage() {
         <div className="flex-1 w-full flex justify-center">
           <div className="w-full max-w-md relative">
 
-            <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full transform scale-90 -z-10" />
+            <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full -z-10" />
 
-            <div className="relative">
-              <AuthForm />
-            </div>
+            <AuthForm />
 
           </div>
         </div>

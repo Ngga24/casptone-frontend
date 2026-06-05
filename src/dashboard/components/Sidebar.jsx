@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Brain,
@@ -10,13 +11,29 @@ import { NavLink, useNavigate, Link } from "react-router-dom";
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const username = localStorage.getItem("username") || "User";
+  // State untuk menyimpan data user agar reaktif
+  const [username, setUsername] = useState(localStorage.getItem("username") || "User");
+  const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || null);
+
+  useEffect(() => {
+    // Fungsi untuk memperbarui state dari localStorage
+    const updateSidebarData = () => {
+      setUsername(localStorage.getItem("username") || "User");
+      setProfileImage(localStorage.getItem("profileImage"));
+    };
+
+    // Dengarkan event "profileUpdated" dari halaman lain
+    window.addEventListener("profileUpdated", updateSidebarData);
+
+    // Bersihkan listener saat komponen di-unmount
+    return () => window.removeEventListener("profileUpdated", updateSidebarData);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("username");
-
+    localStorage.removeItem("profileImage");
     navigate("/");
   };
 
@@ -32,7 +49,6 @@ export default function Sidebar() {
 
   return (
     <aside className="w-72 min-h-screen bg-white text-slate-800 flex flex-col border-r border-slate-200/60 shadow-sm">
-      
       <div className="p-6 border-b border-slate-100">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
@@ -54,37 +70,33 @@ export default function Sidebar() {
           <LayoutDashboard size={18} />
           Dashboard
         </NavLink>
-
         <NavLink to="/ai-insights" className={menuClass}>
           <Brain size={18} />
           AI Insights
         </NavLink>
-
         <NavLink to="/input-activity" className={menuClass}>
           <ClipboardList size={18} />
           Input Activity
         </NavLink>
-
         <NavLink to="/analytics" className={menuClass}>
           <BarChart3 size={18} />
           Analytics
         </NavLink>
-
         <NavLink to="/history" className={menuClass}>
           <History size={18} />
           Similar History
         </NavLink>
-
       </nav>
 
       <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-<Link 
+        <Link 
           to="/profile"
           className="block bg-white rounded-xl p-3.5 mb-3 border border-slate-100 shadow-sm hover:bg-slate-50 hover:border-slate-200 transition-all cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold">
-              {username.charAt(0).toUpperCase()}
+            <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold overflow-hidden border border-slate-200">
+              {/* Ubah ini */}
+{profileImage ? <img src={`${profileImage}?t=${new Date().getTime()}`} alt="User" className="w-full h-full object-cover" /> : null}
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-800 truncate">
@@ -105,7 +117,6 @@ export default function Sidebar() {
           Sign out
         </button>
       </div>
-
     </aside>
   );
 }

@@ -1,87 +1,133 @@
 import { useState, useEffect } from "react";
+import { apiFetch } from "../../utils/api";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function useProfile() {
-  const [profile, setProfile] = useState({
-    full_name: "",
-    phone: "",
-    birth_date: "",
-    gender: "",
+const [profile, setProfile] = useState({
+full_name: "",
+phone: "",
+birth_date: "",
+gender: "",
+});
+
+const [profileImage, setProfileImage] = useState(null);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(null);
+const [successMsg, setSuccessMsg] = useState("");
+
+const fetchProfile = async () => {
+try {
+setLoading(true);
+setError(null);
+
+
+  const res = await apiFetch("/profiles", {
+    method: "GET",
   });
-  const [profileImage, setProfileImage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMsg, setSuccessMsg] = useState("");
 
-  const fetchProfile = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("accessToken"); // Sesuaikan jika beda
+  const result = await res.json();
 
-      console.log("Token yang terbaca:", token);
-      const res = await fetch(`${BASE_URL}/profiles`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      if (!res.ok) throw new Error("Gagal memuat profil");
-      
-      const data = await res.json();
+  console.log("PROFILE RESPONSE:", result);
 
-      const profileData = data.data || data; 
-      
-      setProfile({
-        full_name: profileData.full_name || "",
-        phone: profileData.phone || "",
-        birth_date: profileData.birth_date || "",
-        gender: profileData.gender || "",
-      });
+  if (!res.ok) {
+    throw new Error(
+      result.message || "Gagal memuat profil"
+    );
+  }
 
-      // Jika backend mengirimkan URL gambar
-      if (profileData.profile_image_url) {
-        setProfileImage(profileData.profile_image_url);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const profileData = result.data;
 
-  // Mengupdate data profile
-  const updateProfile = async (formData) => {
-    setLoading(true);
-    setError(null);
-    setSuccessMsg("");
-    
-    try {
-      const token = localStorage.getItem("accessToken");
-      
-      const res = await fetch(`${BASE_URL}/profiles`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Jangan set Content-Type ke application/json karena kita pakai FormData (multipart)
-        },
-        body: formData, 
-      });
+  setProfile({
+    full_name: profileData.fullname || "",
+    phone: profileData.phone || "",
+    birth_date: profileData.birthdate
+      ? profileData.birthdate.split("T")[0]
+      : "",
+    gender: profileData.gender || "",
+  });
 
-      if (!res.ok) throw new Error("Gagal memperbarui profil");
-      
-      setSuccessMsg("Profile updated successfully!");
-      fetchProfile(); // Refresh data setelah berhasil update
-      return true;
-    } catch (err) {
-      setError(err.message);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (profileData.profileimage) {
+    const imageUrl =
+      `${BASE_URL}/${profileData.profileimage}`;
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+    setProfileImage(imageUrl);
 
-  return { profile, setProfile, profileImage, loading, error, successMsg, updateProfile };
+    localStorage.setItem(
+      "profileImage",
+      imageUrl
+    );
+  }
+
+  setError(null);
+} catch (err) {
+  console.error("Fetch Profile Error:", err);
+  setError(err.message);
+} finally {
+  setLoading(false);
+}
+
+
+};
+
+const updateProfile = async (formData) => {
+try {
+setLoading(true);
+setError(null);
+setSuccessMsg("");
+
+
+  const response = await apiFetch("/profiles", {
+    method: "PUT",
+    body: formData,
+  });
+
+  const result = await response.json();
+
+  console.log("UPDATE RESPONSE:", result);
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal update profil"
+    );
+  }
+
+  setSuccessMsg(
+    result.message ||
+      "Profile updated successfully!"
+  );
+
+  await fetchProfile();
+
+  return result;
+} catch (err) {
+  console.error(
+    "Update Profile Error:",
+    err
+  );
+
+  setError(err.message);
+  throw err;
+} finally {
+  setLoading(false);
+}
+
+
+};
+
+useEffect(() => {
+fetchProfile();
+}, []);
+
+return {
+profile,
+setProfile,
+profileImage,
+setProfileImage,
+loading,
+error,
+successMsg,
+updateProfile,
+fetchProfile,
+};
 }

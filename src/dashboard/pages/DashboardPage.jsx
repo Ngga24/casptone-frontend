@@ -1,6 +1,6 @@
 import DashboardLayout from "../components/DashboardLayout";
 import useDashboard from "../hooks/useDashboard";
-import DailySummary from "../components/DailySummary"; // (Bisa dihapus jika tidak dipakai di halaman lain, karena sudah inline di bawah)
+import DailySummary from "../components/DailySummary"; 
 
 import {
   Target,
