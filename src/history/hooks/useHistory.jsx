@@ -1,19 +1,16 @@
 import { useMemo } from "react";
+import useDashboard from "../../dashboard/hooks/useDashboard";
 
 export default function useHistory() {
-  const historyData = useMemo(() => {
-    const result = JSON.parse(
-      localStorage.getItem("analyticsResult")
-    );
+  // Ambil dari hook dashboard yang udah narik data backend
+  const { dashboardData, loading } = useDashboard();
 
-    return (
-      result?.data?.[
-        "4_similar_productivity_history"
-      ] || null
-    );
-  }, []);
+  const historyData = useMemo(() => {
+    return dashboardData?.data?.["4_similar_productivity_history"] || null;
+  }, [dashboardData]);
 
   return {
     historyData,
+    loading,
   };
 }

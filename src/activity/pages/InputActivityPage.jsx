@@ -17,7 +17,6 @@ export default function InputActivityPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Menjaga input hanya boleh angka dan titik desimal
     const cleanValue = value.replace(/[^0-9.]/g, "");
 
     setForm({
@@ -46,28 +45,26 @@ export default function InputActivityPage() {
     await submitActivity(payload);
   };
 
-  // Styling input minimalis dengan fokus ring biru transparan yang halus
   const inputClass =
     "w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 " +
     "outline-none transition-all duration-200 text-sm font-medium " +
     "focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white placeholder:text-slate-400";
 
-  // Pembagian field ke dalam kategori agar form lebih scannable
   const fields = [
     {
       name: "sleep_duration",
       label: "Sleep Duration (hours)",
-      placeholder: "e.g. 7",
+      placeholder: "e.g. 8",
     },
     {
       name: "study_work_duration",
       label: "Study / Work Duration (hours)",
-      placeholder: "e.g. 6.5",
+      placeholder: "e.g. 8",
     },
     {
       name: "exercise_duration",
       label: "Exercise Duration (minutes)",
-      placeholder: "e.g. 1",
+      placeholder: "e.g. 30",
     },
     {
       name: "downtime_duration",
@@ -95,8 +92,8 @@ export default function InputActivityPage() {
               Daily Activity Input 📝
             </h2>
             <p className="text-xs text-slate-400 mt-1 font-light">
-              Masukkan metrik aktivitas harian Anda untuk memperbarui
-              visualisasi dashboard dan analisis AI Twin.
+              Enter your daily activity metrics to update the dashboard
+              visualizations and AI Twin analysis.
             </p>
           </div>
 

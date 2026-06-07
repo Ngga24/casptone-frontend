@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../../utils/api";
 
 export default function useDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const load = () => {
+  const load = async () => {
     try {
       setLoading(true);
+      const [aiResponse, summaryResponse] = await Promise.all([
+        apiFetch("/analytics/latest-prediction"),
+        apiFetch("/analytics/daily-summary"),
+      ]);
 
-      const raw = localStorage.getItem("analyticsResult");
-      console.log("RAW analyticsResult:", raw);
-
-      if (!raw) {
-        setDashboardData(null);
-        return;
-      }
-
-      const parsed = JSON.parse(raw);
-      console.log("PARSED:", parsed);
-
-      // PERBAIKAN: Simpan root object (parsed) agar dailySummary tidak hilang
-      setDashboardData(parsed);
-
+      const aiResult = await aiResponse.json();
+      const summaryResult = await summaryResponse.json();
+      setDashboardData({
+        data: aiResult.status === "success" ? aiResult.data : null,
+        dailySummary:
+          summaryResult.status === "success" && summaryResult.data
+            ? summaryResult.data.dailySummary
+            : null,
+      });
     } catch (err) {
-      console.error("useDashboard parse error:", err);
+      console.error("Gagal menarik data dashboard:", err);
       setDashboardData(null);
     } finally {
       setLoading(false);
@@ -34,12 +34,7 @@ export default function useDashboard() {
     load();
 
     window.addEventListener("analytics-updated", load);
-    window.addEventListener("storage", load);
-
-    return () => {
-      window.removeEventListener("analytics-updated", load);
-      window.removeEventListener("storage", load);
-    };
+    return () => window.removeEventListener("analytics-updated", load);
   }, []);
 
   return { dashboardData, loading };

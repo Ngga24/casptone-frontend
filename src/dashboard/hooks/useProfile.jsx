@@ -28,8 +28,6 @@ setError(null);
 
   const result = await res.json();
 
-  console.log("PROFILE RESPONSE:", result);
-
   if (!res.ok) {
     throw new Error(
       result.message || "Gagal memuat profil"
@@ -83,9 +81,6 @@ setSuccessMsg("");
   });
 
   const result = await response.json();
-
-  console.log("UPDATE RESPONSE:", result);
-
   if (!response.ok) {
     throw new Error(
       result.message || "Gagal update profil"

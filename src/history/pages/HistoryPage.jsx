@@ -8,8 +8,12 @@ export default function HistoryPage() {
     return (
       <DashboardLayout title="History">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-          <h2 className="text-lg font-bold text-slate-800">No historical data</h2>
-          <p className="text-sm text-slate-400">Analisis produktivitas belum tersedia untuk ditampilkan.</p>
+          <h2 className="text-lg font-bold text-slate-800">
+            No historical data
+          </h2>
+          <p className="text-sm text-slate-400">
+            Analisis produktivitas belum tersedia untuk ditampilkan.
+          </p>
         </div>
       </DashboardLayout>
     );
@@ -29,12 +33,14 @@ export default function HistoryPage() {
           <span className="text-xl font-bold text-slate-400 mb-2">%</span>
         </div>
         <p className="mt-2 text-sm text-slate-500 font-medium">
-          Dihitung berdasarkan hari-hari dengan pola produktivitas yang serupa.
+          Calculated based on days with similar productivity patterns.
         </p>
       </div>
 
       {/* Similar Days List */}
-      <h3 className="text-lg font-bold text-slate-800 mb-4 tracking-tight">Top Similar Days</h3>
+      <h3 className="text-lg font-bold text-slate-800 mb-4 tracking-tight">
+        Top Similar Days
+      </h3>
       <div className="grid md:grid-cols-3 gap-6">
         {historyData.top_3_similar_days.map((item, index) => (
           <div
@@ -50,13 +56,21 @@ export default function HistoryPage() {
 
             <div className="space-y-4">
               <div>
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Similarity</p>
-                <p className="text-2xl font-extrabold text-slate-800">{item.similarity_score}</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Similarity
+                </p>
+                <p className="text-2xl font-extrabold text-slate-800">
+                  {item.similarity_score}
+                </p>
               </div>
-              
+
               <div className="pt-4 border-t border-slate-50">
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Productivity Score</p>
-                <p className="text-lg font-semibold text-slate-700">{item.historical_productivity_score}%</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Productivity Score
+                </p>
+                <p className="text-lg font-semibold text-slate-700">
+                  {item.historical_productivity_score}%
+                </p>
               </div>
             </div>
           </div>

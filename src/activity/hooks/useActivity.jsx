@@ -21,25 +21,11 @@ export default function useActivity() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.log("Backend Error:", data);
-
-        throw new Error(
-          data?.message ||
-          data?.error ||
-          "Prediction failed"
-        );
+        throw new Error(data?.message || data?.error || "Prediction failed");
       }
 
-      // Menyimpan berkas hasil prediksi AI ke storage lokal
-      localStorage.setItem(
-        "analyticsResult",
-        JSON.stringify(data)
-      );
-
-      // Memicu trigger event global agar layar dashboard sinkron secara realtime
       window.dispatchEvent(new Event("analytics-updated"));
 
-      // Redirect kembali ke gerbang utama dashboard
       navigate("/dashboard");
 
       return data;

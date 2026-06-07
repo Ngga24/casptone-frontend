@@ -5,7 +5,9 @@ export const apiFetch = async (endpoint, options = {}) => {
 
   // PERBAIKAN 1: Hanya pasang Content-Type JSON jika body BUKAN FormData
   const headers = {
-    ...(!(options.body instanceof FormData) && { "Content-Type": "application/json" }),
+    ...(!(options.body instanceof FormData) && {
+      "Content-Type": "application/json",
+    }),
     ...options.headers,
     ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
   };
@@ -36,7 +38,8 @@ export const apiFetch = async (endpoint, options = {}) => {
         const refreshData = await refreshRes.json();
 
         // Ambil token baru (tambahkan opsional chaining ?. untuk menghindari crash)
-        const newAccessToken = refreshData.data?.accessToken || refreshData.accessToken;
+        const newAccessToken =
+          refreshData.data?.accessToken || refreshData.accessToken;
 
         localStorage.setItem("accessToken", newAccessToken);
 

@@ -1,41 +1,80 @@
 import { create } from "zustand";
-import { apiFetch } from "../utils/api"; // Pastikan path benar
+import { apiFetch } from "../utils/api";
 
 const useAuthStore = create((set) => ({
   isAuthenticated: false,
   user: null,
+  role: null, // 🔥 Tambahin state role
+  isCheckingAuth: true,
 
-  // Fungsi untuk mengambil data user saat refresh
   hydrate: async () => {
     const token = localStorage.getItem("accessToken");
-    if (!token) return;
+
+    if (!token) {
+      set({
+        isAuthenticated: false,
+        user: null,
+        role: null,
+        isCheckingAuth: false,
+      });
+      return;
+    }
 
     try {
-      const response = await apiFetch("/auth");
+      const response = await apiFetch("/profiles");
       if (response.ok) {
         const data = await response.json();
+        const userData = data.data.user;
+        const userRole = data.data.role;
 
-        localStorage.setItem("isCheckin", userData.isCheckin);
+        if (userData && userData.isCheckin !== undefined) {
+          localStorage.setItem("isCheckin", userData.isCheckin);
+        }
+        if (userRole) {
+          localStorage.setItem("role", userRole);
+        }
 
-        set({ isAuthenticated: true, user: data.data.user });
+        // 🔥 Update state isAuthenticated, user, dan role
+        set({
+          isAuthenticated: true,
+          user: userData,
+          role: userRole || localStorage.getItem("role"),
+          isCheckingAuth: false,
+        });
       } else {
-        // Jika token invalid, logout otomatis
+        const errData = await response.json();
+        console.error("Alasan ditolak:", errData);
         localStorage.removeItem("accessToken");
-        set({ isAuthenticated: false, user: null });
+        localStorage.removeItem("isCheckin");
+        localStorage.removeItem("role");
+        set({
+          isAuthenticated: false,
+          user: null,
+          role: null,
+          isCheckingAuth: false,
+        });
       }
     } catch (err) {
-      set({ isAuthenticated: false, user: null });
+      console.error("API Fetch Error:", err);
+      set({
+        isAuthenticated: false,
+        user: null,
+        role: null,
+        isCheckingAuth: false,
+      });
     }
   },
 
-  login: (accessToken, userData) => {
-    set({ isAuthenticated: true, user: userData });
+  login: (accessToken, userData, userRole) => {
+    set({ isAuthenticated: true, user: userData, role: userRole });
   },
 
   logout: () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    set({ isAuthenticated: false, user: null });
+    localStorage.removeItem("isCheckin");
+    localStorage.removeItem("role");
+    set({ isAuthenticated: false, user: null, role: null });
   },
 }));
 

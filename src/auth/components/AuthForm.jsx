@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
+import logoTwin from "../../assets/logo.png";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -83,20 +84,22 @@ export default function AuthForm() {
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 p-6">
       <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/50 transition-all duration-300">
         <div className="mb-6 text-center">
-          <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xs font-bold tracking-wider">
-            AI
-          </div>
+          <img
+            src={logoTwin}
+            alt="Logo"
+            className="w-16 h-16 mx-auto object-contain mb-1"
+          />
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">
             {step === "otp"
               ? "Verify OTP"
               : isLogin
-                ? "Welcome Back"
+                ? "Welcome To"
                 : "Create Account"}
           </h1>
           <p className="text-xs text-slate-400 mt-1 font-normal">
             {step === "otp"
               ? "Enter the code sent to your email"
-              : "Smart productivity dashboard"}
+              : "Smart Digital Twin"}
           </p>
         </div>
 
@@ -128,8 +131,8 @@ export default function AuthForm() {
             )}
             <input
               name="email"
-              type="email"
-              placeholder="Email address"
+              type={isLogin ? "text" : "email"}
+              placeholder={isLogin ? "Email or Username" : "Email address"}
               onChange={handleChange}
               className={inputClass}
             />
