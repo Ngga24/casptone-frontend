@@ -10,6 +10,8 @@ const useAuthStore = create((set) => ({
   hydrate: async () => {
     const token = localStorage.getItem("accessToken");
 
+    const localIsCheckin = localStorage.getItem("isCheckin");
+
     if (!token) {
       set({
         isAuthenticated: false,
@@ -22,20 +24,22 @@ const useAuthStore = create((set) => ({
 
     try {
       const response = await apiFetch("/profiles");
-
       if (!response.ok) throw new Error("Auth failed");
 
       const data = await response.json();
       const userData = data.data.user;
       const userRole = data.data.role;
+      const finalIsCheckin =
+        userData?.isCheckin !== undefined ? userData.isCheckin : localIsCheckin;
 
       localStorage.setItem("role", userRole || "");
-      localStorage.setItem("isCheckin", userData?.isCheckin || "");
+      localStorage.setItem("isCheckin", finalIsCheckin || "");
 
       set({
         isAuthenticated: true,
         user: userData,
         role: userRole,
+        isCheckin: finalIsCheckin,
         isCheckingAuth: false,
       });
     } catch (err) {
